@@ -9,7 +9,7 @@ vector_db = VectorDatabase()
 vector_db.load_vector_db()
 retriever = Retriver(vector_db)
 
-search_query = "Admission opening date?"
+search_query = "ভর্তি কবে?"
 
 docs = retriever.search(search_query)
 

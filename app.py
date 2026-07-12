@@ -24,5 +24,3 @@ chunks = splitter.split_documents(documents)
 # print("\n")
 # print(TextCleaner.clean(chunks[0].page_content))
 
-
-
