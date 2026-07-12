@@ -6,7 +6,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 class SemanticDocumentSplitter:
 
-    def __init__(self, documents):
+    def __init__(self):
         
         self.embedding_model= HuggingFaceEmbeddings(
             model_name="BAAI/bge-m3"
