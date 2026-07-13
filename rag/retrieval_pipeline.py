@@ -1,12 +1,17 @@
-
 # vector db theke top 3 match chunks ber kora
-class Retriver:
+class Retriever:
 
-    def __init__(self, vector_db, search_kwargs={"k": 3}):
-        self.vector_db = vector_db
-        self.retriever = self.vector_db.get_retriever(search_kwargs={"k": 3})
+    def __init__(self, vector_db):
+        self.db = vector_db.get_db()
 
-    def search(self, query):
-        if self.retriever is None:
-            raise ValueError("Retriever is not initialized. Please create or load the vector database first.")
-        return self.retriever.invoke(query)
+    def search(self, query,k=5, threshold=0.36):
+        
+        results = self.db.similarity_search_with_relevance_scores(query=query, k=k)
+
+        documents = []
+        for doc, score in results:
+            print(f"Score: {score:.3f} --> {doc.metadata['title']}")
+            if score >= threshold:
+                documents.append(doc)
+    
+        return documents

@@ -19,7 +19,11 @@ class VectorDatabase:
         self.db=Chroma(persist_directory=self.persist_directory, embedding_function=self.embedding)
         return self.db
     
+    # to see top k match chunks
     def get_retriever(self, search_kwargs={"k": 3}):
         if self.db is None:
             raise ValueError("Vector database is not initialized. Please create or load the database first.")
         return self.db.as_retriever(search_kwargs=search_kwargs)
+    
+    def get_db(self):
+        return self.db
