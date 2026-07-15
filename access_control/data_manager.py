@@ -1,8 +1,13 @@
 import pandas as pd
+from pathlib import Path
 
 class DataManager:
 
-    def __init__(self, student_data="../informations/students_data.csv", teacher_data="../informations/teachers_data.csv"):
+    def __init__(self, student_data=None, teacher_data=None):
+        project_root = Path(__file__).resolve().parent.parent
+        student_data = student_data or project_root / "informations" / "students_data.csv"
+        teacher_data = teacher_data or project_root / "informations" / "teachers_data.csv"
+
         self.students = pd.read_csv(student_data)
         self.teachers = pd.read_csv(teacher_data)
 

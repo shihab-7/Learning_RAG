@@ -28,6 +28,8 @@ from rag.vectorDB import VectorDatabase
 from rag.retrieval_pipeline import Retriever
 from rag.llm import UniversityLLM
 from deep_translator import GoogleTranslator
+from access_control.query_manager import QueryManager
+from access_control.auth import Auth
 
 translator = GoogleTranslator(source_lang="bn", target_lang="en")
 
@@ -53,32 +55,55 @@ def main():
     print("Welcome to DIU AI")
     print("#"*20)
 
+    auth = Auth()
+    session = auth.login()
+    if session is None:
+        print("\nAuthentication failed")
+        return
+
     vector_db = VectorDatabase()
     vector_db.load_vector_db()
 
     retriever = Retriever(vector_db,)
     llm = UniversityLLM()
 
+    query_manager = QueryManager(retriever=retriever, llm=llm)
+
+    # while True:
+    #     query = input("\nAsk what you want to know.......(type 'exit' to quit) ===>>>  \n")
+
+    #     if query.lower() == "exit":
+    #         print("\nধন্যবাদ!")
+    #         break
+
+    #     docs = retriever.search(query)
+    #     context = create_context(docs)
+    #     print("=" * 100)
+    #     print(context)
+    #     print("=" * 100)
+
+    #     # llm hishebe qwen2.5:3b bangla bujhte khub kahini kore tai google translator use kora
+    #     en_query = translator.translate(query)
+    #     print(f"English Query: {en_query}")
+    #     answer = llm.ask(en_query, context)
+    #     print(f"Answer: {answer}")
+    #     print("\n")
+    #     source_print(docs)
+
     while True:
-        query = input("\nAsk what you want to know.......(type 'exit' to quit): ")
+        query = input("\nAsk what you want to know.......(type 'exit' to quit) ===>>>  \n")
 
         if query.lower() == "exit":
             print("\nধন্যবাদ!")
             break
 
-        docs = retriever.search(query)
-        context = create_context(docs)
-        print("=" * 100)
-        print(context)
-        print("=" * 100)
+        result= query_manager.process_query(session=session,query=query)
 
-        # llm hishebe qwen2.5:3b bangla bujhte khub kahini kore tai google translator use kora
-        en_query = translator.translate(query)
-        print(f"English Query: {en_query}")
-        answer = llm.ask(en_query, context)
-        print(f"Answer: {answer}")
-        print("\n")
-        source_print(docs)
+        print("=" * 100)
+        
+        print(f"Answer: {result}")
+
+        print("=" * 100)
 
 if __name__ == "__main__":
     main()
