@@ -28,13 +28,19 @@ from rag.vectorDB import VectorDatabase
 from rag.retrieval_pipeline import Retriever
 from rag.llm import UniversityLLM
 from deep_translator import GoogleTranslator
-from access_control.query_manager import QueryManager
-from access_control.auth import Auth
+from Task2_access.query_manager import QueryManager
+from Task2_access.auth import Auth
 
 translator = GoogleTranslator(source_lang="bn", target_lang="en")
 
 def create_context(documents):
     return "\n\n".join(doc.page_content for doc in documents)
+
+def query_language_check(query):
+    if any('\u0980' <= ch <= '\u09FF' for ch in query):
+        translated_query = translator.translate(query)
+        return translated_query
+    return query
 
 def source_print(documents):
     print("\n Sources : ")
@@ -48,6 +54,19 @@ def source_print(documents):
         if item not in checked:
             print(f"{source} (Page: {page+1})")
             checked.add(item)
+    return "\n".join(f"{source} (Page: {page+1})" for source, page in checked)
+
+def txt_printer(query, ans, src, filename="output.txt"):
+    with open(filename, "w", encoding="utf-8") as f:
+
+        f.write("#" * 60 + "\n")
+        f.write("DIU AI RESPONSE\n")
+        f.write("#" * 60 + "\n\n")
+
+        f.write(f"Question:\n{query}\n\n")
+        f.write(f"Answer:\n{ans}\n\n")
+        f.write(f"Sources: {source_print(src)}\n\n")
+
 
 def main():
 
@@ -96,13 +115,15 @@ def main():
         if query.lower() == "exit":
             print("\nধন্যবাদ!")
             break
-
+        
+        query = query_language_check(query)
         result= query_manager.process_query(session=session,query=query)
 
+        txt_printer(query, result["answer"], result["sources"], filename="output.txt")
         print("=" * 100)
         
-        print(f"Answer: {result}")
-
+        print(f"Answer: {result['answer']}")
+        source_print(result['sources'])
         print("=" * 100)
 
 if __name__ == "__main__":
