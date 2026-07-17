@@ -1,11 +1,17 @@
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
+from pathlib import Path
 
 class VectorDatabase:
 
     def __init__(self, persist_directory="storage/chroma_DB", embedding_model="BAAI/bge-m3"):
+        
+        base_dir = Path(__file__).resolve().parent.parent
+        persist_path = Path(persist_directory)
+        if not persist_path.is_absolute():
+            persist_path = (base_dir / persist_path).resolve()
 
-        self.persist_directory = persist_directory
+        self.persist_directory = str(persist_path)
         self.embedding = HuggingFaceEmbeddings(model_name=embedding_model)
         
         self.db=None

@@ -64,7 +64,7 @@ def main():
     vector_db = VectorDatabase()
     vector_db.load_vector_db()
 
-    retriever = Retriever(vector_db,)
+    retriever = Retriever(vector_db)
     llm = UniversityLLM()
 
     query_manager = QueryManager(retriever=retriever, llm=llm)
